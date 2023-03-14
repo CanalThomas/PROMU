@@ -1,5 +1,8 @@
 import mido
 import time
+import warnings
+import os
+import json
 
 
 open_ports = mido.get_input_names()
@@ -22,22 +25,17 @@ def process_Erae(arg: mido.messages.messages.Message):
             message = {
                 "controller": "Erae",
                 "type": arg.type,
-                # "channel": arg.channel,
-                # "note": arg.note,
-                # "velocity": arg.velocity,
+                "velocity": arg.velocity,
                 "time": current_time - start_time,
-                # "arg": arg,
             }
             message_Erae.append(message)
         case "control_change":
             message = {
                 "controller": "Erae",
                 "type": arg.type,
-                # "channel": arg.channel,
                 "control": arg.control,
                 "value": arg.value,
                 "time": current_time - start_time,
-                # "arg": arg,
             }
             message_Erae.append(message)
         case _:
@@ -60,22 +58,29 @@ input("Press Enter to stop recording...")
 port_Akai.close()
 port_Erae.close()
 
-X, Y = [], []
+def transform(x):
+    if x <= 64:
+        y = 0.003125 * x # 0.003125 = 0.2 / 64
+    else:
+        y = 0.0125 * x - 0.6 # 0.0125 = 0.8 / 64
+    if y < 0 or y > 1:
+        warnings.warn("Transformed velocity value not in [0, 1]", RuntimeWarning)
+    return y
+
+XYa = []
 # iteration sur les impacts ("note_on")
 for mess in filter(lambda d: d["controller"] == "Erae" and d["type"] == "note_on", message_Erae):
+    velocity = transform(mess["velocity"])
+
     # on prend les changements de contrôle qui suivent ("control_change")
-    first_X = next(filter(lambda d: d["controller"] == "Erae" and d["type"] == "control_change" and d["control"] == 60 and d["time"] >= mess["time"], message_Erae))
-    first_Y = next(filter(lambda d: d["controller"] == "Erae" and d["type"] == "control_change" and d["control"] == 61 and d["time"] >= mess["time"], message_Erae))
-    X.append(first_X["value"])
-    Y.append(first_Y["value"])
+    X = next(filter(lambda d: d["controller"] == "Erae" and d["type"] == "control_change" and d["control"] == 60 and d["time"] >= mess["time"], message_Erae))
+    Y = next(filter(lambda d: d["controller"] == "Erae" and d["type"] == "control_change" and d["control"] == 61 and d["time"] >= mess["time"], message_Erae))
+    XYa.append((X["value"], Y["value"], velocity))
 
-import json
+os.makedirs("records", exist_ok=True)
 
-with open("X.json", "w") as f:
-    json.dump(X, f)
+with open("records/XYa.json", "w") as f:
+    json.dump(XYa, f)
 
-with open("Y.json", "w") as g:
-    json.dump(Y, g)
-
-with open("Akai_data.json", "w") as f:
-    json.dump(messages_Akai, f)
+with open("records/Akai_data.json", "w") as g:
+    json.dump(messages_Akai, g)
