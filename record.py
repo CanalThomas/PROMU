@@ -39,13 +39,18 @@ global_parameters = {
     15: 64, # pitch
 }
 
+first_time = True
 start_time = time.time()
 messages_Akai, message_Erae = [], []
 
 def process_Erae(arg: mido.messages.messages.Message):
     current_time = time.time()
+
     match arg.type:
         case "note_on":
+            if first_time:
+                start_time = current_time
+                first_time = False
             message = {
                 "controller": "Erae",
                 "type": arg.type,
@@ -54,27 +59,33 @@ def process_Erae(arg: mido.messages.messages.Message):
             }
             message_Erae.append(message)
         case "control_change":
-            message = {
-                "controller": "Erae",
-                "type": arg.type,
-                "control": arg.control,
-                "value": arg.value,
-                "time": current_time - start_time,
-            }
-            message_Erae.append(message)
+            if not first_time:
+                message = {
+                    "controller": "Erae",
+                    "type": arg.type,
+                    "control": arg.control,
+                    "value": arg.value,
+                    "time": current_time - start_time,
+                }
+                message_Erae.append(message)
         case _:
             pass
 
 def process_Akai(arg: mido.messages.messages.Message):
-    current_time = time.time()
-    if arg.type == "control_change" and arg.control in [48, 49, 50, 51, 52, 53, 54, 55, 15]:
-        message = {
-            "controller": "Akai",
-            "control": arg.control,
-            "value": arg.value,
-            "time": current_time - start_time,
-        }
-        messages_Akai.append(message)
+    if first_time:
+        if arg.type == "control_change" and arg.control in [48, 49, 50, 51, 15]:
+            global_parameters[arg.control] = arg.value
+    else:
+        current_time = time.time()
+        if arg.type == "control_change" and arg.control in [48, 49, 50, 51, 15]:
+            message = {
+                "controller": "Akai",
+                "control": arg.control,
+                "value": arg.value,
+                "time": current_time - start_time,
+            }
+            messages_Akai.append(message)
+            global_parameters[arg.control] = arg.value
 
 port_Erae = mido.open_input(open_ports[Erae_index], callback=process_Erae)
 port_Akai = mido.open_input(open_ports[Akai_index], callback=process_Akai)
