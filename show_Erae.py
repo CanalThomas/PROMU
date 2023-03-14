@@ -1,21 +1,31 @@
 import json
 import matplotlib.pyplot as plt
 
-with open("X.json", "r") as f:
-    X = json.load(f)
 
-with open("Y.json", "r") as g:
-    Y = json.load(g)
+def load_Erae_data():
+    with open("X.json", "r") as f:
+        X = json.load(f)
 
-# fig, ax = plt.subplots()
-# ax.set_xlim(0, 128)
-# ax.set_ylim(0, 128)
-# ax.scatter(X, Y)
-# fig.show()
+    with open("Y.json", "r") as g:
+        Y = json.load(g)
 
-X, Y = [62, 99, 21, 95], [35, 71, 66, 71]
+    return X, Y
 
-plt.scatter(X, Y)
-plt.xlim(0, 128)
-plt.ylim(0, 128)
-plt.show()
+
+def main():
+    X, Y = load_Erae_data()
+
+    plt.figure(num="Show Erae")
+    plt.axvline(x=64, color="#888888", linestyle=":", alpha=.4)
+    plt.axhline(y=64, color="#888888", linestyle=":", alpha=.4)
+    plt.scatter(X, Y, color="#63AA29", alpha=0.5, edgecolors="none")
+    plt.xlim(0, 128)
+    plt.ylim(0, 128)
+    plt.xticks([])
+    plt.yticks([])
+    plt.title("Représentation de là où on tape")
+    plt.show()
+
+
+if __name__ == "__main__":
+    main()
