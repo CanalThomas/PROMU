@@ -24,7 +24,7 @@ def main():
     plt.ylim(0, 128)
     plt.xticks([])
     plt.yticks([])
-    plt.title("Représentation de là où on tape")
+    plt.title("Représentation de là où on tape et si c'est fort")
     plt.show()
 
 
