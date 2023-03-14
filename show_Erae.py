@@ -1,24 +1,25 @@
 import json
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def load_Erae_data():
-    with open("X.json", "r") as f:
-        X = json.load(f)
+    with open("records/XYa.json", "r") as f:
+        XYa = json.load(f)
+        np_XYa = np.array(XYa)
 
-    with open("Y.json", "r") as g:
-        Y = json.load(g)
+    X, Y, alpha = np_XYa[:, 0], np_XYa[:, 1], np_XYa[:, 2]
 
-    return X, Y
+    return X, Y, alpha
 
 
 def main():
-    X, Y = load_Erae_data()
+    X, Y, alpha = load_Erae_data()
 
     plt.figure(num="Show Erae")
     plt.axvline(x=64, color="#888888", linestyle=":", alpha=.4)
     plt.axhline(y=64, color="#888888", linestyle=":", alpha=.4)
-    plt.scatter(X, Y, color="#63AA29", alpha=0.5, edgecolors="none")
+    plt.scatter(X, Y, color="#63AA29", alpha=alpha, edgecolors="none")
     plt.xlim(0, 128)
     plt.ylim(0, 128)
     plt.xticks([])
