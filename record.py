@@ -4,6 +4,8 @@ import warnings
 import os
 import json
 
+import process_midi
+
 
 open_ports = mido.get_input_names()
 Erae_indexes = [open_ports.index(l) for l in open_ports if l.startswith("Erae Touch")]
@@ -14,6 +16,28 @@ assert Akai_indexes != [], "Akai APC40 is not plugged in"
 
 Erae_index = Erae_indexes[0]
 Akai_index = Akai_indexes[0]
+
+target_parameters = {
+    "velocity": 0, # velocity of the stroke
+    60: 64, # X - Erae
+    61: 64, # Y - Erae
+    48: 64, # sustain
+    49: 64, # damp
+    50: 64, # inharmonicity
+    51: 64, # squareness
+    15: 64, # pitch
+}
+
+global_parameters = {
+    "velocity": 0, # velocity of the stroke
+    60: 64, # X - Erae
+    61: 64, # Y - Erae
+    48: 64, # sustain
+    49: 64, # damp
+    50: 64, # inharmonicity
+    51: 64, # squareness
+    15: 64, # pitch
+}
 
 start_time = time.time()
 messages_Akai, message_Erae = [], []
