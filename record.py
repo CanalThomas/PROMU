@@ -58,6 +58,7 @@ def process_Erae(arg: mido.messages.messages.Message):
                 "time": current_time - start_time,
             }
             message_Erae.append(message)
+            global_parameters["velocity"] = arg.velocity
         case "control_change":
             if not first_time:
                 message = {
@@ -68,6 +69,7 @@ def process_Erae(arg: mido.messages.messages.Message):
                     "time": current_time - start_time,
                 }
                 message_Erae.append(message)
+                global_parameters[arg.control] = arg.value
         case _:
             pass
 
