@@ -104,7 +104,7 @@ def transform(x):
         warnings.warn("Transformed velocity value not in [0, 1]", RuntimeWarning)
     return y
 
-XYa = []
+XYat = []
 # iteration sur les impacts ("note_on")
 for mess in filter(lambda d: d["controller"] == "Erae" and d["type"] == "note_on", message_Erae):
     velocity = transform(mess["velocity"])
@@ -112,12 +112,18 @@ for mess in filter(lambda d: d["controller"] == "Erae" and d["type"] == "note_on
     # on prend les changements de contrôle qui suivent ("control_change")
     X = next(filter(lambda d: d["controller"] == "Erae" and d["type"] == "control_change" and d["control"] == 60 and d["time"] >= mess["time"], message_Erae))
     Y = next(filter(lambda d: d["controller"] == "Erae" and d["type"] == "control_change" and d["control"] == 61 and d["time"] >= mess["time"], message_Erae))
-    XYa.append((X["value"], Y["value"], velocity))
+    
+    time_stroke = max(mess["time"], X["time"], Y["time"])
+    
+    XYat.append((X["value"], Y["value"], velocity, time_stroke))
 
 os.makedirs("records", exist_ok=True)
 
-with open("records/XYa.json", "w") as f:
-    json.dump(XYa, f)
+with open("records/XYat.json", "w") as f:
+    json.dump(XYat, f)
 
 with open("records/Akai_data.json", "w") as g:
     json.dump(messages_Akai, g)
+
+with open("records/target.json", "w") as h:
+    json.dump(target_parameters, h)

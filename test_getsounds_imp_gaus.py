@@ -4,6 +4,7 @@ sys.path.insert(1, "../wave2shape/src/")
 
 from ftm_u_shape import getsounds_imp_gaus
 import sounddevice as sd
+sd.default.latency = "low"
 
 def main():
     m1 = 20
@@ -11,16 +12,17 @@ def main():
     r1 = 0.5
     r2 = 0.5
     w11 = 2000
-    tau11 = 0.1
+    tau11 = 0.7
     p = 0.2
-    D = 0.1
+    D = 7
     alpha = 0.7
-    sr=22050
+    sr = 22050
     y = getsounds_imp_gaus(m1, m2, r1, r2, w11, tau11, p, D, alpha, sr)
     inp = input(">>>")
     while inp != "stop":
         sd.play(y, sr)
         inp = input(">>>")
+
 
 if __name__ == "__main__":
     main()
