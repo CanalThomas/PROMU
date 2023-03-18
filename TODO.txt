@@ -1,0 +1,13 @@
+https://pypi.org/project/auraloss/
+https://pytorch.org/docs/stable/generated/torch.stft.html
+https://arxiv.org/pdf/2001.04643.pdf p8
+tester la perception de stft
+
+
+loopMIDI -> MIDI-OX -> Waveform ?? à éviter
+
+faire le midi to ftm
+
+calculer le loss à partir des json, il faudra filter pour avoir les derniers updates avant la frappe
+
+faire jouer le son directement depuis le soundwave

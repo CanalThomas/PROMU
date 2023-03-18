@@ -40,7 +40,7 @@ def measure_loss(d, d_target, loss=auraloss.freq.MultiResolutionSTFTLoss()) -> f
     theta = midi_parameters_to_theta(d)
     theta_target = midi_parameters_to_theta(d_target)
 
-    soundwave = ftm(theta)
+    soundwave = ftm(theta) # play this sound directly
     soundwave_target = ftm(theta_target)
 
     y_hat = process(soundwave)

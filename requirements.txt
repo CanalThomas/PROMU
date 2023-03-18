@@ -1,0 +1,7 @@
+matplotlib
+torch
+numpy
+auraloss
+mido
+python-rtmidi
+sounddevice
