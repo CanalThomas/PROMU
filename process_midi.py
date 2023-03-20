@@ -5,10 +5,16 @@ sys.path.insert(1, "../wave2shape/src/")
 from ftm_u_shape import getsounds_imp_gaus
 
 from typing import Dict
+from math import pi
 import numpy as np
 import torch
 import auraloss
 
+
+def fit_in_range(midi_value, min_range, max_range):
+    tmp_value = midi_value / 128
+    result_value = min_range + (max_range - min_range) * tmp_value
+    return result_value
 
 def midi_parameters_to_theta(d: Dict[str | int, int]) -> tuple:
     """Convertit les paramètres venant des messages MIDI en paramètres physiques theta
@@ -40,13 +46,13 @@ def midi_parameters_to_theta(d: Dict[str | int, int]) -> tuple:
     )
     """
     m1, m2 = 5, 5
-    r1 = d[60] / 128 # X - Erae
-    r2 = d[61] / 128 # Y - Erae
-    w11 = d[15] / # pitch
-    tau11 = d[48] / # sustain
-    p = d[49] / # damp
-    D = d[50] / # inharmonicity
-    alpha = d[51] / # squareness
+    r1 = fit_in_range(d[60], 0.005, 0.995) # X - Erae
+    r2 = fit_in_range(d[61], 0.005, 0.995) # Y - Erae
+    w11 = 2 * pi * 2 ** ((d[15] - 69.0) / 12.0) # pitch
+    tau11 = fit_in_range(d[48], 0.01, 0.5) # sustain
+    p = fit_in_range(d[49], 0.0, 0.35) # damp
+    D = fit_in_range(d[50], 0.0, 10.0) # inharmonicity
+    alpha = fit_in_range(d[51], 0.01, 1.0) # squareness
     sr = 22050
     theta = (m1, m2, r1, r2, w11, tau11, p, D, alpha, sr)
     return theta
