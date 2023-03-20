@@ -16,6 +16,7 @@ def fit_in_range(midi_value, min_range, max_range):
     result_value = min_range + (max_range - min_range) * tmp_value
     return result_value
 
+
 def midi_parameters_to_theta(d: Dict[str | int, int]) -> tuple:
     """Convertit les paramètres venant des messages MIDI en paramètres physiques theta
 
