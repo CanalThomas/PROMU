@@ -54,7 +54,7 @@ def main():
     plt.figure(num="Show Akai")
     for control, item in data_dict.items():
         np_item = np.array(item)
-        plt.plot(np_item[:, 0], np_item[:, 1], label=map_controller[control], color=map_colors[control])
+        plt.step(np_item[:, 0], np_item[:, 1], label=map_controller[control], color=map_colors[control])
     
     for control, item in d_target.items():
         if control in ["48", "49", "50", "51", "15"]:

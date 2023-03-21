@@ -62,7 +62,7 @@ def load_data():
 def main():
     time, loss = load_data()
     plt.figure(num="Show Loss")
-    plt.plot(time, loss)
+    plt.step(time, loss)
     plt.title("MultiResolutionSTFTLoss := f(time)")
     plt.show()
 
