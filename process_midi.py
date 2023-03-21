@@ -4,11 +4,11 @@ sys.path.insert(1, "../wave2shape/src/")
 
 from ftm_u_shape import getsounds_imp_gaus
 
-from typing import Dict
-from math import pi
 import numpy as np
 import torch
 import auraloss
+
+from typing import Dict
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -19,7 +19,7 @@ def fit_in_range(midi_value, min_range, max_range):
     return result_value
 
 
-def midi_parameters_to_theta(d: Dict[str | int, int]) -> tuple:
+def midi_parameters_to_theta(d: Dict[str | int, int], fixed_position=False) -> tuple:
     # 2.09 µs ± 210 ns
     """Convertit les paramètres venant des messages MIDI en paramètres physiques theta
 
@@ -50,8 +50,12 @@ def midi_parameters_to_theta(d: Dict[str | int, int]) -> tuple:
     )
     """
     m1, m2 = 5, 5
-    r1 = fit_in_range(d["60"], 0.005, 0.995) # X - Erae
-    r2 = fit_in_range(d["61"], 0.005, 0.995) # Y - Erae
+    if fixed_position:
+        r1 = fit_in_range(64, 0.005, 0.995)
+        r2 = r1
+    else:
+        r1 = fit_in_range(d["60"], 0.005, 0.995) # X - Erae
+        r2 = fit_in_range(d["61"], 0.005, 0.995) # Y - Erae
     frequency = 440 * 2 ** ((d["15"] - 69) / 12.0)
     w11 = frequency * 8 * 2 ** (-4.18 / 12.0) # pitch
     tau11 = fit_in_range(d["48"], 0.01, 0.5) # sustain
