@@ -1,6 +1,4 @@
 import matplotlib.pyplot as plt
-import numpy as np
-import json
 import auraloss
 from show_Akai import load_Akai_data, load_target
 from show_Erae import load_Erae_data
