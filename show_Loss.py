@@ -56,11 +56,31 @@ def load_data():
         time.append(time_stroke - first_time_stroke)
         loss.append(loss_stroke)
 
+    import json
+    with open("json_time.json", "w") as f:
+        json.dump(time, f)
+    with open("json_loss.json", "w") as f:
+        json.dump(loss, f)
+
+    return time, loss
+
+
+def sub_main_Loss():
+    try:
+        import json
+        with open("json_time.json", "r") as f:
+            time = json.load(f)
+        with open("json_loss.json", "r") as f:
+            loss = json.load(f)
+    except:
+        print("Couldn't load json file")
+        from show_Loss import load_data
+        time, loss = load_data()
     return time, loss
 
 
 def main():
-    time, loss = load_data()
+    time, loss = sub_main_Loss()
     plt.figure(num="Show Loss")
     plt.step(time, loss)
     plt.title("MultiResolutionSTFTLoss := f(time)")

@@ -17,7 +17,7 @@ def load_target() -> Dict[str, int]:
     return d_target
 
 
-def main():
+def process_data():
     Akai_data = load_Akai_data()
     d_target = load_target()
 
@@ -51,19 +51,30 @@ def main():
         value = elem["value"]
         data_dict.setdefault(control, []).append((time, value))
 
-    plt.figure(num="Show Akai")
+    return data_dict, map_controller, map_colors, d_target
+
+
+def sub_main_Akai(ax: plt.Axes):
+    data_dict, map_controller, map_colors, d_target = process_data()
+
     for control, item in data_dict.items():
         np_item = np.array(item)
-        plt.step(np_item[:, 0], np_item[:, 1], label=map_controller[control], color=map_colors[control])
+        ax.step(np_item[:, 0], np_item[:, 1], label=map_controller[control], color=map_colors[control])
     
     for control, item in d_target.items():
         if control in ["48", "49", "50", "51", "15"]:
-            plt.axhline(y=item, color=map_colors[int(control)], linestyle=":", alpha=.4)
+            ax.axhline(y=item, color=map_colors[int(control)], linestyle=":", alpha=.4)
 
-    plt.xlabel("Temps (s)")
-    plt.ylabel("Valeur MIDI")
-    plt.legend(loc="upper left")
-    plt.title("Changement des valeurs de chaque potard en fonction du temps")
+    ax.set_xlabel("Temps (s)")
+    ax.set_ylabel("Valeur MIDI")
+    ax.legend(loc="upper left")
+
+
+def main():
+    fig, ax1 = plt.subplots()
+    plt.get_current_fig_manager().set_window_title("Show Akai")
+    sub_main_Akai(ax1)
+    ax1.set_title("Changement des valeurs de chaque potard en fonction du temps")
     plt.show()
 
 
