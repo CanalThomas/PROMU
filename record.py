@@ -5,6 +5,8 @@ import os
 import json
 
 import process_midi
+import sounddevice as sd
+sd.default.latency = 'low'
 
 
 open_ports = mido.get_input_names()
@@ -19,27 +21,26 @@ Akai_index = Akai_indexes[0]
 
 target_parameters = {
     "velocity": 0, # velocity of the stroke
-    60: 64, # X - Erae
-    61: 64, # Y - Erae
-    48: 64, # sustain
-    49: 64, # damp
-    50: 64, # inharmonicity
-    51: 64, # squareness
-    15: 64, # pitch
+    "60": 64, # X - Erae
+    "61": 64, # Y - Erae
+    "48": 12, # sustain
+    "49": 100, # damp
+    "50": 51, # inharmonicity
+    "51": 20, # squareness
+    "15": 88, # pitch
 }
 
 global_parameters = {
     "velocity": 0, # velocity of the stroke
-    60: 64, # X - Erae
-    61: 64, # Y - Erae
-    48: 64, # sustain
-    49: 64, # damp
-    50: 64, # inharmonicity
-    51: 64, # squareness
-    15: 64, # pitch
+    "60": 64, # X - Erae
+    "61": 64, # Y - Erae
+    "48": 64, # sustain
+    "49": 64, # damp
+    "50": 64, # inharmonicity
+    "51": 64, # squareness
+    "15": 64, # pitch
 }
 
-first_time = True
 start_time = time.time()
 messages_Akai, message_Erae = [], []
 
@@ -48,6 +49,10 @@ def process_Erae(arg: mido.messages.messages.Message):
 
     match arg.type:
         case "note_on":
+            global_parameters["velocity"] = arg.velocity
+            # theta = process_midi.midi_parameters_to_theta(global_parameters)
+            # soundwave = process_midi.ftm(theta)
+            # sd.play(soundwave, 22050)
             message = {
                 "controller": "Erae",
                 "type": arg.type,
@@ -55,9 +60,9 @@ def process_Erae(arg: mido.messages.messages.Message):
                 "time": current_time - start_time,
             }
             message_Erae.append(message)
-            global_parameters["velocity"] = arg.velocity
         case "control_change":
             if message_Erae != []:
+                global_parameters[str(arg.control)] = arg.value
                 message = {
                     "controller": "Erae",
                     "type": arg.type,
@@ -66,17 +71,17 @@ def process_Erae(arg: mido.messages.messages.Message):
                     "time": current_time - start_time,
                 }
                 message_Erae.append(message)
-                global_parameters[arg.control] = arg.value
         case _:
             pass
 
 def process_Akai(arg: mido.messages.messages.Message):
     if message_Erae == []:
         if arg.type == "control_change" and arg.control in [48, 49, 50, 51, 15]:
-            global_parameters[arg.control] = arg.value
+            global_parameters[str(arg.control)] = arg.value
     else:
         current_time = time.time()
         if arg.type == "control_change" and arg.control in [48, 49, 50, 51, 15]:
+            global_parameters[str(arg.control)] = arg.value
             message = {
                 "controller": "Akai",
                 "control": arg.control,
@@ -84,7 +89,6 @@ def process_Akai(arg: mido.messages.messages.Message):
                 "time": current_time - start_time,
             }
             messages_Akai.append(message)
-            global_parameters[arg.control] = arg.value
 
 port_Erae = mido.open_input(open_ports[Erae_index], callback=process_Erae)
 port_Akai = mido.open_input(open_ports[Akai_index], callback=process_Akai)

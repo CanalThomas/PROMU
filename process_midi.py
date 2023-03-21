@@ -10,6 +10,8 @@ import numpy as np
 import torch
 import auraloss
 
+device = "cuda" if torch.cuda.is_available() else "cpu"
+
 
 def fit_in_range(midi_value, min_range, max_range):
     tmp_value = midi_value / 128
@@ -18,18 +20,19 @@ def fit_in_range(midi_value, min_range, max_range):
 
 
 def midi_parameters_to_theta(d: Dict[str | int, int]) -> tuple:
+    # 2.09 µs ± 210 ns
     """Convertit les paramètres venant des messages MIDI en paramètres physiques theta
 
     Args:
     d: dict {
         "velocity": 0, # velocity of the stroke
-        60: 64, # X - Erae
-        61: 64, # Y - Erae
-        48: 64, # sustain
-        49: 64, # damp
-        50: 64, # inharmonicity
-        51: 64, # squareness
-        15: 64, # pitch
+        "60": 64, # X - Erae
+        "61": 64, # Y - Erae
+        "48": 64, # sustain
+        "49": 64, # damp
+        "50": 64, # inharmonicity
+        "51": 64, # squareness
+        "15": 64, # pitch
     }
 
     Output:
@@ -38,7 +41,7 @@ def midi_parameters_to_theta(d: Dict[str | int, int]) -> tuple:
         m2: int,
         r1: float,
         r2: float,
-        w11: int,
+        w11: float,
         tau11: float,
         p: float,
         D: float,
@@ -49,7 +52,8 @@ def midi_parameters_to_theta(d: Dict[str | int, int]) -> tuple:
     m1, m2 = 5, 5
     r1 = fit_in_range(d["60"], 0.005, 0.995) # X - Erae
     r2 = fit_in_range(d["61"], 0.005, 0.995) # Y - Erae
-    w11 = 2 * pi * 2 ** ((d["15"] - 69.0) / 12.0) # pitch
+    frequency = 440 * 2 ** ((d["15"] - 69) / 12.0)
+    w11 = frequency * 8 * 2 ** (-4.18 / 12.0) # pitch
     tau11 = fit_in_range(d["48"], 0.01, 0.5) # sustain
     p = fit_in_range(d["49"], 0.0, 0.35) # damp
     D = fit_in_range(d["50"], 0.0, 10.0) # inharmonicity
@@ -60,11 +64,12 @@ def midi_parameters_to_theta(d: Dict[str | int, int]) -> tuple:
 
 
 def ftm(theta: tuple) -> np.ndarray:
+    # 770 ms ± 38.1 ms
     return getsounds_imp_gaus(*theta)
 
 
 def process(y: np.ndarray) -> torch.Tensor:
-    return torch.Tensor(y)
+    return torch.Tensor(y).to(device)
 
 
 def unprocess(out: torch.Tensor) -> float:

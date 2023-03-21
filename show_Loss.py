@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import json
 import auraloss
-from show_Akai import load_Akai_data
+from show_Akai import load_Akai_data, load_target
 from show_Erae import load_Erae_data
 from process_midi import measure_loss
 import os
@@ -35,8 +35,7 @@ def load_data():
     Akai_data = load_Akai_data()
     X, Y, alpha, times_strokes = load_Erae_data()
 
-    with open("records/target.json", "r") as f:
-        d_target = json.load(f)
+    d_target = load_target()
 
     mrstft = auraloss.freq.MultiResolutionSTFTLoss()
 
