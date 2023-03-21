@@ -5,15 +5,16 @@ import auraloss
 from show_Akai import load_Akai_data
 from show_Erae import load_Erae_data
 from process_midi import measure_loss
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 from typing import List, Dict
 
 
 def select_midi(data: List[Dict[str, str | int | float]], time: float, channel: int, target: int) -> int:
     for event in data:
-        for _, v in event.items():
-            if v["control"] == channel and v["time"] >= time:
-                return v["value"]
+        if event["control"] == channel and event["time"] >= time:
+            return event["value"]
 
     return target
 
@@ -42,17 +43,18 @@ def load_data():
     time = []
     loss = []
 
+    first_time_stroke = times_strokes[0]
+
     for x, y, velocity, time_stroke in zip(X, Y, alpha, times_strokes):
         d = {}
         d["velocity"] = velocity
-        d[60] = x
-        d[61] = y
-        for midi_channel in [48, 49, 50, 51, 15]:
+        d["60"] = x
+        d["61"] = y
+        for midi_channel in ["48", "49", "50", "51", "15"]:
             d[midi_channel] = select_midi(Akai_data, time_stroke, midi_channel, d_target[midi_channel])
-
         loss_stroke = measure_loss(d, d_target, mrstft)
 
-        time.append(time_stroke)
+        time.append(time_stroke - first_time_stroke)
         loss.append(loss_stroke)
 
     return time, loss

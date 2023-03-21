@@ -47,13 +47,13 @@ def midi_parameters_to_theta(d: Dict[str | int, int]) -> tuple:
     )
     """
     m1, m2 = 5, 5
-    r1 = fit_in_range(d[60], 0.005, 0.995) # X - Erae
-    r2 = fit_in_range(d[61], 0.005, 0.995) # Y - Erae
-    w11 = 2 * pi * 2 ** ((d[15] - 69.0) / 12.0) # pitch
-    tau11 = fit_in_range(d[48], 0.01, 0.5) # sustain
-    p = fit_in_range(d[49], 0.0, 0.35) # damp
-    D = fit_in_range(d[50], 0.0, 10.0) # inharmonicity
-    alpha = fit_in_range(d[51], 0.01, 1.0) # squareness
+    r1 = fit_in_range(d["60"], 0.005, 0.995) # X - Erae
+    r2 = fit_in_range(d["61"], 0.005, 0.995) # Y - Erae
+    w11 = 2 * pi * 2 ** ((d["15"] - 69.0) / 12.0) # pitch
+    tau11 = fit_in_range(d["48"], 0.01, 0.5) # sustain
+    p = fit_in_range(d["49"], 0.0, 0.35) # damp
+    D = fit_in_range(d["50"], 0.0, 10.0) # inharmonicity
+    alpha = fit_in_range(d["51"], 0.01, 1.0) # squareness
     sr = 22050
     theta = (m1, m2, r1, r2, w11, tau11, p, D, alpha, sr)
     return theta

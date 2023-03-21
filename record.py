@@ -48,9 +48,6 @@ def process_Erae(arg: mido.messages.messages.Message):
 
     match arg.type:
         case "note_on":
-            if first_time:
-                start_time = current_time
-                first_time = False
             message = {
                 "controller": "Erae",
                 "type": arg.type,
@@ -60,7 +57,7 @@ def process_Erae(arg: mido.messages.messages.Message):
             message_Erae.append(message)
             global_parameters["velocity"] = arg.velocity
         case "control_change":
-            if not first_time:
+            if message_Erae != []:
                 message = {
                     "controller": "Erae",
                     "type": arg.type,
@@ -74,7 +71,7 @@ def process_Erae(arg: mido.messages.messages.Message):
             pass
 
 def process_Akai(arg: mido.messages.messages.Message):
-    if first_time:
+    if message_Erae == []:
         if arg.type == "control_change" and arg.control in [48, 49, 50, 51, 15]:
             global_parameters[arg.control] = arg.value
     else:
