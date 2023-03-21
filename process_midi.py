@@ -81,10 +81,10 @@ def unprocess(out: torch.Tensor) -> float:
 
 
 def measure_loss(d, d_target, loss=auraloss.freq.MultiResolutionSTFTLoss()) -> float:
-    theta = midi_parameters_to_theta(d)
+    theta = midi_parameters_to_theta(d, fixed_position=False)
     theta_target = midi_parameters_to_theta(d_target)
 
-    soundwave = ftm(theta) # play this sound directly
+    soundwave = ftm(theta)
     soundwave_target = ftm(theta_target)
 
     y_hat = process(soundwave)
