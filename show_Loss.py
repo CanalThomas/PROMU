@@ -11,8 +11,12 @@ from typing import List, Dict
 
 
 def select_midi(data: List[Dict[str, str | int | float]], time: float, channel: str, target: int) -> int:
-    for event in data:
-        if event["control"] == int(channel) and event["time"] >= time:
+    # itération par ordre décroissant du temps
+    for event in reversed(data):
+        # on sélectionne les events d'un certain knob
+        # on sélectionne les events qui surgissent juste avant un certain temps
+        # on retourne la première valeur qui vérifie ces deux propriétés
+        if event["control"] == int(channel) and event["time"] <= time:
             return event["value"]
 
     return target
@@ -49,6 +53,8 @@ def load_data():
         d["60"] = x
         d["61"] = y
         for midi_channel in ["48", "49", "50", "51", "15"]:
+            # get the last update of each knob before the stroke appened
+            # otherwise get a default value
             d[midi_channel] = select_midi(Akai_data, time_stroke, midi_channel, d_target[midi_channel])
 
         loss_stroke = measure_loss(d, d_target, mrstft)
