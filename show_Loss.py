@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 import auraloss
 from tqdm import tqdm
 from show_Akai import load_Akai_data, load_target
@@ -22,7 +23,7 @@ def select_midi(data: List[Dict[str, str | int | float]], time: float, channel: 
     return target
 
 
-def load_data():
+def load_data(eps: float = 1e-3):
     """
     This function loads Akai, Erae Touch data of the experiment.
     It loads target values.
@@ -57,7 +58,7 @@ def load_data():
             # otherwise get a default value
             d[midi_channel] = select_midi(Akai_data, time_stroke, midi_channel, d_target[midi_channel])
 
-        loss_stroke = measure_loss(d, d_target, mrstft)
+        loss_stroke = np.log(measure_loss(d, d_target, mrstft) + eps)
 
         time.append(time_stroke + first_time_stroke)
         loss.append(loss_stroke)

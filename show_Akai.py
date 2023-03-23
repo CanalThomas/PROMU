@@ -65,8 +65,7 @@ def sub_main_Akai(ax: plt.Axes):
         if control in ["48", "49", "50", "51", "15"]:
             ax.axhline(y=item, color=map_colors[int(control)], linestyle=":", alpha=.4)
 
-    ax.set_xlabel("Temps (s)")
-    ax.set_ylabel("Valeur MIDI")
+    ax.set_ylabel("MIDI value")
     ax.legend(loc="upper left")
 
 
