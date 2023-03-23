@@ -59,7 +59,7 @@ def load_data():
 
         loss_stroke = measure_loss(d, d_target, mrstft)
 
-        time.append(time_stroke - first_time_stroke)
+        time.append(time_stroke + first_time_stroke)
         loss.append(loss_stroke)
 
     import json
@@ -89,6 +89,8 @@ def main():
     time, loss = sub_main_Loss()
     plt.figure(num="Show Loss")
     plt.step(time, loss)
+    plt.xlabel("Time (s)")
+    plt.ylabel("Loss value")
     plt.title("MultiResolutionSTFTLoss := f(time)")
     plt.show()
 

@@ -10,6 +10,7 @@ def main_loss(ax: plt.Axes):
     from show_Loss import sub_main_Loss
     time, loss = sub_main_Loss()
     ax.step(time, loss, label="Loss", color="grey")
+    ax.set_ylabel("Loss value")
     ax.legend(loc="center left")
 
 
