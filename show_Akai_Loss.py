@@ -13,10 +13,14 @@ def main_loss(ax: plt.Axes):
     first_time_stroke = time[0]
     time_shifted = time - first_time_stroke * np.ones_like(time)
 
-    loss_zero = [0 if l == 0 else np.nan for l in loss]
+    loss_zero = [0 if l < 1e-6 else np.nan for l in loss]
 
     ax.step(time_shifted, loss, label="Loss", color="grey", where="post")
     ax.step(time_shifted, loss_zero, color="tab:green", where="post")
+
+    for t, l in zip(time_shifted, loss):
+        if l == 0:
+            ax.scatter(t, 0, marker='x', color="green")
 
     ax.set_xlabel("Time (s)")
     ax.set_ylabel("Loss value")

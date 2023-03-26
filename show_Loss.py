@@ -86,8 +86,16 @@ def sub_main_Loss():
 
 def main():
     time, loss = sub_main_Loss()
+    loss_zero = [0 if l < 1e-6 else np.nan for l in loss]
+
     plt.figure(num="Show Loss")
-    plt.step(time, loss)
+    plt.step(time, loss, label="Loss", color="grey", where="post")
+    plt.step(time, loss_zero, color="tab:green", where="post")
+
+    for t, l in zip(time, loss):
+        if l == 0:
+            plt.scatter(t, 0, marker='x', color="green")
+
     plt.xlabel("Time (s)")
     plt.ylabel("Loss value")
     plt.title("MultiResolutionSTFTLoss := f(time)")
