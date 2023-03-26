@@ -85,7 +85,7 @@ def sub_main_Loss():
 
 
 def main():
-    time, loss, _ = sub_main_Loss()
+    time, loss = sub_main_Loss()
     plt.figure(num="Show Loss")
     plt.step(time, loss)
     plt.xlabel("Time (s)")
