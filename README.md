@@ -47,3 +47,19 @@ or
 <pre>python show_Akai.py</pre>
 
 If you want to change the loss metric, replace the l.44 in `show_Loss.py`.
+
+## Potential issues
+
+Some issues may occur during recording.
+
+We use **mido** to read messages comming from MIDI devices. If you need to use those devices on another application, you need to create virtual MIDI devices (example: [loopMIDI]([loodMidi](https://www.tobias-erichsen.de/software/loopmidi.html))) and mapping them accordingly (example: [MIDI-OX](http://www.midiox.com/)). Then, you need to tweak the MIDI ports of the `record.py` script (l.21, l.22).
+
+During record time, overflow may happen if messages from both devices happen too fast. We don't really have a solution for that.
+
+The downsides of playing the sound from this script record time are:
+- Latency is atrocious (~1s)
+- The sound is not updated when tweaking the controller at the same time
+
+If a Python package that let us use a .vst plugin exists, it would solve the issue.
+
+There is no automatic file manager. You need to move JSON files manually inside the `records/` folder between recording sessions to avoid overwriting data. You also need to delete `json_loss.json` and `json_time.json` if you want to compute loss values again.
